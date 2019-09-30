@@ -16,6 +16,14 @@ Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, J. M. R., 
      
      Matlab R2017b
 
+# Codes
+
+* 1 - Which database was used in these codes?
+     
+     COOLL - available in https://coolldataset.github.io/
+
+Ps. The codes are formatted for this dataset but it can be used for other datasets.
+
 # Files
 * 
 
