@@ -2,7 +2,7 @@
 % Website: http://www.iit.comillas.edu/personas/afrodriguez
 % E-Mail:  	adrian.fernandez@iit.comillas.edu
 % 
-% This function calculated the prony's features with matrix pencil approch:
+% This function calculated the prony's features with polynomail approch:
 % 
 % Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, 
 % J. M. R., Jiménez, J. M. M., & Boquete, L. (2018). Coding Prony’s 
