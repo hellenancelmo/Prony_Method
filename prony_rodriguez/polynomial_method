@@ -1,12 +1,29 @@
-% Coding Prony’s method in MATLAB and applying it to biomedical signal filtering
-% A. Fernández Rodríguez, L. de Santiago Rodrigo, E. López Guillén, 
-% J. M. Rodríguez Ascariz, J. M. Miguel Jiménez and Luciano Boquete
+% Code Written by A Fernandez Rodriguez, Instituto de Investigación Tecnológica.
+% Website: http://www.iit.comillas.edu/personas/afrodriguez
+% E-Mail:  	adrian.fernandez@iit.comillas.edu
+% 
+% This function calculated the prony's features with matrix pencil approch:
+% 
+% Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, 
+% J. M. R., Jiménez, J. M. M., & Boquete, L. (2018). Coding Prony’s 
+% method in MATLAB and applying it to biomedical signal filtering. 
+% BMC Bioinformatics, 19(1). https://doi.org/10.1186/s12859-018-2473-y
+% 
+% Format for calling function:
+% 
+% function [Amp,alfa,freq,theta] = polynomial_method(x,p,Ts,method)
+% 
+% where
+% x = the original signal
+% n = reconstruction order (number of each feature)
+% Ts = sampling rate
+% method = 'classic', 'ls' or 'tls' (case insensitive, define the solving method)
+% 
+% Amp, alfa, freq, theta -> estimated features.
 
-% Code 1 - Polynomial Implementation
 
 function [Amp,alfa,freq,theta] = polynomial_method(x,p,Ts,method)
-% method: 'classic', 'ls' or 'tls' (case insensitive)
-% define the solving methods
+
 
     CLASSIC = 0;
     LS = 1;
