@@ -1,0 +1,80 @@
+% Coding Prony’s method in MATLAB and applying it to biomedical signal filtering
+% A. Fernández Rodríguez, L. de Santiago Rodrigo, E. López Guillén,
+% J. M. Rodríguez Ascariz, J. M. Miguel Jiménez and Luciano Boquete
+% Teste com métodos desenvolvidos por RODRÍGUEZ
+% Base de dados COOLL
+
+clear all
+close all
+clc
+
+load('scaleFactors.txt')
+load('instantes_COOLL_100kHz.mat')
+inst = instantes_COOLL_100kHz;
+
+% Parâmetros do sinal
+ta = 100000; % taxa de amostragem original
+decim = 100; %Valor de decimação
+f1 = 50; %Frequência do sinal
+ciclo = ta/f1; %Número de amostras por ciclo
+
+for ii=1:840
+    
+    %% BASE DE DADOS COOLL
+
+    % Carrega as formas de onda da base de dados
+    f = 50;
+    ta = 100000; % frequencia de amostragem
+    ta = 100000/100;
+    Ts = 1/ta;
+%     decim = 5;
+    n_ciclo = 10;
+    cd('C:\Users\Hellen\Desktop\Mestrado\Projeto Copel\Base de Dados\COOL\COOLL\Current')
+    corrente = audioread(sprintf('scenarioC1_%d.flac',ii));
+    corrente = corrente * scaleFactors(ii,1);
+
+    % Define instante inicial e final da janela a ser estimada
+    [teste,inst_inicial] =  max((corrente(inst(ii):inst(ii)+5*ciclo))); %Instante inicial da janela
+    inst_final = inst_inicial + n_ciclo*ciclo; %Instante final da janela
+    sinal = corrente(inst(ii)+inst_inicial:inst(ii)+inst_final); %Define a janela de amostras a ser analisada
+    sinal = sinal - mean(sinal);
+    sinal_decimado = decimate(sinal,100);
+    
+    
+    %%
+    method = 'LS';
+    type = 'mpm';
+    ordem = 15;
+    %ordem = length(sinal_decimado)/2;
+    
+    
+    cd('C:\Users\Hellen\Desktop\Mestrado\Projeto Copel\PRONY RODRÍGUEZ')
+    
+%     [Amp,alfa,freq,theta] = polynomial_method(sinal_decimado,ordem,Ts,method);
+    
+    [Amp,alfa,freq,theta] = matrix_pencil(sinal_decimado,ordem,Ts);
+%     x = sinal;
+%     p = 15;
+%     Ncomp = 10;
+    %             [Amp, alfa,freq,theta] = prony_lowpass_filter(x,p,Ts,type,method,Ncomp);
+    
+    estimado = 0;
+    
+    for kk=1:length(Amp)
+        
+        for n=2:length(sinal_decimado)
+            
+            estimado(kk,n) = Amp(kk) * exp(1i*theta(kk)) .* exp((alfa(kk) + 1i*2*pi*freq(kk))*(Ts)*(n-1));
+            
+        end
+        
+    end
+    
+    estimado_final(ii,:) = real(sum(estimado))';
+    carac(:,ii) = [Amp', alfa',freq',theta'];
+    
+end
+
+%     save('prony_CLASSIC','estimado_final');
+
+% end
