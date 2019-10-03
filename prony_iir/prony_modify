@@ -1,3 +1,8 @@
+% Code based in Matlab Prony Toobox, avalaible
+% in https://www.mathworks.com/matlabcentral/fileexchange/3955-prony-toolbox?focused=5051917&tab=function
+% Adapted by Hellen C. Ancelmo, Universidade Tecnológica Federal do Paraná
+% E-Mail: hellen@alunos.utfpr.edu.br
+
 function [b,a] = prony(h, nb ,na)
 %PRONY Prony's method for time-domain IIR filter design.
 %   [B,A] = PRONY(H, NB, NA) finds a filter with numerator order
