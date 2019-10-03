@@ -1,4 +1,9 @@
 
+% Code based in Matlab Prony Toobox, avalaible
+% in https://www.mathworks.com/matlabcentral/fileexchange/3955-prony-toolbox?focused=5051917&tab=function
+% Adapted by Hellen C. Ancelmo, Universidade Tecnológica Federal do Paraná
+% E-Mail: hellen@alunos.utfpr.edu.br
+
 function [iapp,ai,a_list,tau_list,omega_list,SUB_IND,energy,p,inumz,idenz]=applyprony(test_time,test_data,N,SUB_N,criteria_val)
 % Implements MATLAB Signal Processing Tooltbox prony function 
 % performprony GUI
