@@ -25,7 +25,9 @@ Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, J. M. R., 
 Ps. The codes are formatted for this dataset but it can be used for other datasets.
 
 # Files
-* 
+* prony_rodriguez -> use the main_methods, estimates the characteristics by four different methods
+* prony_iir -> use the main_prony_iir, calculates four types of feature sets by the iir filter-based prony method
+* instantes_COOLL_100kHz.mat -> ON and OFF moments of curves in samples, download this file to simulate the codes
 
 # Questions & Suggestions
 * For any questions and/or suggestions, please feel free to e-mail us at: hellen@alunos.utfpr.edu.br
