@@ -2,7 +2,7 @@
 
 The codes in this repository are explain in these articles: 
 
-Ancelmo, H. C., Grando, F. L., Costa, C. H., Mulinari, B. M., Oroski, E., Lazzaretti, A. E., … Renaux, D. P. B. (n.d.). Automatic Power Signature Analysis using Prony ’ s Method and Machine Learning-Based Classifiers. 8–13.
+Ancelmo, H. C., Grando, F. L., Costa, C. H., Mulinari, B. M., Oroski, E., Lazzaretti, A. E.,Renaux, D. P. B. (n.d.). Automatic Power Signature Analysis using Prony ’ s Method and Machine Learning-Based Classifiers. 8–13.
 
 Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, J. M. R., Jiménez, J. M. M., & Boquete, L. (2018). Coding Prony’s method in MATLAB and applying it to biomedical signal filtering. BMC Bioinformatics, 19(1). https://doi.org/10.1186/s12859-018-2473-y
 
