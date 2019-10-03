@@ -1,75 +1,106 @@
-    %% Método de Prony
-    curva_sub = Its_r;
-   
-    f = 60;
-    ta = samples_tbl(1).sample_freq; % frequencia de amostragem
-    decim = 5;
+   % Code Written by Hellen C Ancelmo based in Matlab Prony Toobox, avalaible
+% in https://www.mathworks.com/matlabcentral/fileexchange/3955-prony-toolbox?focused=5051917&tab=function
+% Universidade Tecnológica Federal do Paraná
+% E-Mail: hellen@alunos.utfpr.edu.br
+%
+% This code estimates four feature types from the matlab toolbox prony method
+% 1 - Amplitude, Damping, Frequency and Phase
+% 2 - Coefficients of H(z)
+% 3 - Real and imag of H(z)
+% 4 - Abs and angle of H(z)
+
+% where
+% scaleFactors.txt = scale factor from COOLL dataset, available in https://coolldataset.github.io/
+% instantes_COOLL_100kHz.mat = ON and OFF moments of curves in samples ->
+% [on off] available in this github
+%
+
+% vetor_features_p -> estimated features.
+
+
+
+%% Signal parameters
+
+load('scaleFactors.txt') % scale factor from COOLL dataset
+load('instantes_COOLL_100kHz.mat') % ON and OFF moments of curves in samples
+inst = instantes_COOLL_100kHz; % ON and OFF moments of curves in samples
+ta = 100000; % original sampling rate
+decim = 100; % Decimate value
+f = 50; % Signal frequency
+ciclo = ta/f; % Number of samples per cycle
+Ts = 1/ta; % Sampling period
+n_curvas = 840; % Base signal number
+
+for ii=1:n_curvas
     
-    % Decimação do Sinal
-    sinal_1 = decimate(Its_r,decim);
-    ciclo = floor(length(sinal_1)*decim/f);
+    % Load of .flac files
+    corrente = audioread(sprintf('scenarioC1_%d.flac',ii));
+    corrente = corrente * scaleFactors(ii,1);
     
-    % Definição do instante inicial
-   [~,inst_inicial] =  max(abs(sinal_1(1:(ciclo*2)))); 
-   [~,inst_final] =  min(sinal_1((ciclo*8):end)); 
-   sinal = sinal_1((inst_inicial):(ciclo*8 + inst_final));
+    % Defines start and end time of window to be estimated
+    n_ciclo = 10; % number of cycles to be analyzed
+    [~,inst_inicial] =  max((corrente(inst(ii):inst(ii)+2*ciclo))); % Initial window instant
+    inst_final = inst_inicial + n_ciclo*ciclo; % End of window
+    sinal = corrente(inst(ii)+inst_inicial:inst(ii)+inst_final); % Samples to be analyzed
+    sinal = sinal - mean(sinal); % Signal Average Subtraction
+    sinal = decimate(sinal,decim); % Signal decimation
     
-    % Subtração da média
-    sinal = sinal - mean(sinal);
-%     sinal = sinal_2;
     
-    % Vetor tempo do sinal
+    % Signal time vector
     t = 0: decim/ta : (decim/ta * (length(sinal)-1));
     
-    % Parâmetros do Método
-    NewVal = ExtractionParams_DB.param1;
-    SUBN = ExtractionParams_DB.param2;
-        
+    % Method Parameters
+    NewVal = 20; % Order
+    SUBN = 10; % Suborder
+    
     % Prony com ordem e número de polos/zeros pré-definidos
     [iapp,ai,a_list,tau_list,omega_list,SUB_IND,energy,p,inumz,idenz]=applyprony_modify(t,sinal,NewVal,SUBN,1);
     [inummz,idennz]=residuez(a_list,p,1);
-
+    
     ct=0;
     promptstr={};
     cont=1;
     for j=SUB_IND
-        ct=ct+1;    
+        ct=ct+1;
         promptstr=[promptstr;{[num2str(ct,'%2d'),blanks(12),num2str(abs(2*a_list(j)),'%10.1e'),...
-                        blanks(12),num2str(1/tau_list(j),'%12.1e'),...
-                        blanks(12),num2str(abs(omega_list(j)/(2*pi)),'%12.1e'),...
-                        blanks(12)
-                        ]}]; 
+            blanks(12),num2str(1/tau_list(j),'%12.1e'),...
+            blanks(12),num2str(abs(omega_list(j)/(2*pi)),'%12.1e'),...
+            blanks(12)
+            ]}];
         fase(cont) = angle(2*a_list(j));
         cont = cont+1;
     end
-
-    % Definição das características
+    
+    % Definition of characteristics
+    feature_type = 1; % 2, 3 or 4
+    
     b = strvcat(promptstr);
-
+    
     for j=1:length(promptstr)
         c{j} = strsplit(b(j,:),' ');
     end
     for w=1:SUBN
         ampli(w,:) = str2num(c{1, w}{1,2});
         damp(w,:) = str2num(c{1, w}{1,3});
-        freq(w,:) = str2num(c{1, w}{1,4});           
-    end   
+        freq(w,:) = str2num(c{1, w}{1,4});
+    end
     
-    % Decisão de qual característica extrair
     
     if ExtractionParams_DB.param3 == 1
         vetor_features_p = [ampli' damp' freq' fase]; % Características de reconstrução
-    
-    if ExtractionParams_DB.param3 == 2
-        vetor_features_p = [inumz idenz]; % Coeficientes de H(z)
+        
+        if ExtractionParams_DB.param3 == 2
+            vetor_features_p = [inumz idenz]; % Coeficientes de H(z)
+        end
+        
+        if ExtractionParams_DB.param3 == 3
+            vetor_features_p = [imag(inummz) real(inummz) imag(idennz) real(idennz)];  % Real and imag of H(z)
+        end
+        
+        if ExtractionParams_DB.param3 == 4
+            vetor_features_p = [abs(inummz) angle(inummz) abs(idennz) angle(idennz)]; % Abs and angle of H(z)
+        end
     end
-    
-    if ExtractionParams_DB.param3 == 3
-        vetor_features_p = [imag(inummz) real(inummz) imag(idennz) real(idennz)];  % Polos e zeros de H(z)
-    end
-    
-    if ExtractionParams_DB.param3 == 4
-        vetor_features_p = [abs(inummz) angle(inummz) abs(idennz) angle(idennz)]; % Polos e zeros de H(z)
-    end
-   
+end
+
 
