@@ -1,63 +1,71 @@
-% Coding Prony’s method in MATLAB and applying it to biomedical signal filtering
-% A. Fernández Rodríguez, L. de Santiago Rodrigo, E. López Guillén,
-% J. M. Rodríguez Ascariz, J. M. Miguel Jiménez and Luciano Boquete
-% Teste com métodos desenvolvidos por RODRÍGUEZ
-% Base de dados COOLL
+% Code Written by Hellen C. Ancelmo, Universidade Tecnológica Federal do paraná.
+% E-Mail: hellen@alunos.utfpr.edu.br
+%
+% This function calculated the prony's approch using a COOLL dataset codes
+% based on this article:
+% Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, J. M. R., 
+% Jiménez, J. M. M., & Boquete, L. (2018). Coding Prony’s method in MATLAB and 
+% applying it to biomedical signal filtering. BMC Bioinformatics, 19. 
+% https://doi.org/10.1186/s12859-018-2473-y
+%
+%
+% where
+% scaleFactors.txt = scale factor from COOLL dataset, available in https://coolldataset.github.io/
+% instantes_COOLL_100kHz.mat = ON and OFF moments of curves in samples ->
+% [on off] available in this github
+% estimado_final = Signal reconstruction from characteristics
+% 
+
+% Amp, alfa, freq, theta -> estimated features.
+
 
 clear all
 close all
 clc
 
-load('scaleFactors.txt')
-load('instantes_COOLL_100kHz.mat')
-inst = instantes_COOLL_100kHz;
+load('scaleFactors.txt') % scale factor from COOLL dataset
+load('instantes_COOLL_100kHz.mat') % ON and OFF moments of curves in samples
 
-% Parâmetros do sinal
-ta = 100000; % taxa de amostragem original
-decim = 100; %Valor de decimação
-f1 = 50; %Frequência do sinal
-ciclo = ta/f1; %Número de amostras por ciclo
 
-for ii=1:840
+%% Signal parameters
+
+inst = instantes_COOLL_100kHz; % ON and OFF moments of curves in samples
+ta = 100000; % original sampling rate
+decim = 100; % Decimate value
+f = 50; % Signal frequency
+ciclo = ta/f; % Number of samples per cycle
+Ts = 1/ta; % Sampling period
+n_curvas = 840; % Base signal number
+
+
+%%
+for ii=1:n_curvas
     
-    %% BASE DE DADOS COOLL
-
-    % Carrega as formas de onda da base de dados
-    f = 50;
-    ta = 100000; % frequencia de amostragem
-    ta = 100000/100;
-    Ts = 1/ta;
-%     decim = 5;
-    n_ciclo = 10;
-    cd('C:\Users\Hellen\Desktop\Mestrado\Projeto Copel\Base de Dados\COOL\COOLL\Current')
+    % Load of .flac files
     corrente = audioread(sprintf('scenarioC1_%d.flac',ii));
     corrente = corrente * scaleFactors(ii,1);
-
-    % Define instante inicial e final da janela a ser estimada
-    [teste,inst_inicial] =  max((corrente(inst(ii):inst(ii)+5*ciclo))); %Instante inicial da janela
-    inst_final = inst_inicial + n_ciclo*ciclo; %Instante final da janela
-    sinal = corrente(inst(ii)+inst_inicial:inst(ii)+inst_final); %Define a janela de amostras a ser analisada
-    sinal = sinal - mean(sinal);
-    sinal_decimado = decimate(sinal,100);
     
+    % Defines start and end time of window to be estimated
+    n_ciclo = 10; % number of cycles to be analyzed
+    [teste,inst_inicial] =  max((corrente(inst(ii):inst(ii)+5*ciclo))); % Initial window instant
+    inst_final = inst_inicial + n_ciclo*ciclo; % End of window
+    sinal = corrente(inst(ii)+inst_inicial:inst(ii)+inst_final); % Samples to be analyzed
+    sinal = sinal - mean(sinal); % Signal Average Subtraction
+    sinal_decimado = decimate(sinal,decim); % Signal decimation
     
-    %%
-    method = 'LS';
-    type = 'mpm';
-    ordem = 15;
-    %ordem = length(sinal_decimado)/2;
+    % Definition of methods
+    order = 15; % Reconstruction order 
     
+    % Now, decide which method to use and comment out
     
-    cd('C:\Users\Hellen\Desktop\Mestrado\Projeto Copel\PRONY RODRÍGUEZ')
+    % Using a polynomial method
+    method = 'LS'; % 'TLS' or 'CLASSIC'
+    [Amp,alfa,freq,theta] = polynomial_method(sinal_decimado,order,Ts,method);
     
-%     [Amp,alfa,freq,theta] = polynomial_method(sinal_decimado,ordem,Ts,method);
+    % Using a matrix pencil method
+    %[Amp,alfa,freq,theta] = matrix_pencil(sinal_decimado,order,Ts);
     
-    [Amp,alfa,freq,theta] = matrix_pencil(sinal_decimado,ordem,Ts);
-%     x = sinal;
-%     p = 15;
-%     Ncomp = 10;
-    %             [Amp, alfa,freq,theta] = prony_lowpass_filter(x,p,Ts,type,method,Ncomp);
-    
+  % Signal reconstruction from characteristics   
     estimado = 0;
     
     for kk=1:length(Amp)
@@ -70,11 +78,5 @@ for ii=1:840
         
     end
     
-    estimado_final(ii,:) = real(sum(estimado))';
-    carac(:,ii) = [Amp', alfa',freq',theta'];
-    
+    estimado_final(ii,:) = real(sum(estimado))'; % rebuilt sign  
 end
-
-%     save('prony_CLASSIC','estimado_final');
-
-% end
