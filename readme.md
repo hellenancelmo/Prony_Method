@@ -1,6 +1,6 @@
 # Prony's Method
 
-The codes in this repository are explain in these articles: 
+The codes in this repository are explained in these papers: 
 
 Ancelmo, H. C., Grando, F. L., Costa, C. H., Mulinari, B. M., Oroski, E., Lazzaretti, A. E.,Renaux, D. P. B. (n.d.). Automatic Power Signature Analysis using Prony ’ s Method and Machine Learning-Based Classifiers. 8–13.
 
@@ -10,7 +10,7 @@ Rodríguez, A. F., de Santiago Rodrigo, L., Guillén, E. L., Ascariz, J. M. R., 
 
  * 1 - What is this project?
      
-     This project was created to reconstruction waveforms and extract features for the classification step in Non-Intrusive Load Monitoring (NILM).
+     This project was created to reconstruct waveforms and extract features for the classification step in Non-Intrusive Load Monitoring (NILM).
     
  * 2 - Which software was used to develop and use this project?
      
